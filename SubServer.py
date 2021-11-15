@@ -14,6 +14,10 @@ class SubServer:
         return "Player 1: " + self.player1.to_string() + "'\n'Player 2: " + self.player2.to_string() + \
                f"'\n'Its {self.turn.to_string()}'s turn." + "\n" + "Current board = '\n'" + self.board.to_string()
 
+    def set_signs(self):
+        # set signs for the players
+        self.player1.set_player_sign("X")
+        self.player2.set_player_sign("O")
     def Check_if_won_in(self):
         if check_if_over(self.board):
             # return the current players turn

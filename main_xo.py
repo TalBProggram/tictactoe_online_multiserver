@@ -38,7 +38,9 @@ while not stop_loop:
 
             if len(client_sockets) == 2:  # if two players joined, stop looking for players
                 newSubServer = SubServer(player_list.pop(), player_list.pop())  # create a new subserver
+                # set up the subserver
                 newSubServer.board.create_new_board()  # create the board
+                newSubServer.set_signs()
                 running_subserver_list.append(newSubServer)  # add to running subserver list
                 # removes the players from player_list, puts them in a subserver object and adds them
                 # to the running subservers list
