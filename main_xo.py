@@ -33,9 +33,8 @@ while not stop_loop:
             client_sockets.append(connection)
             client_ips.append(client_address)
             # add a player
-            player_list.append(Player(client_address, "", connection))
+            player_list.append(Player(client_address, connection))
             print("A player joined - ", client_address)
-
             if len(client_sockets) == 2:  # if two players joined, stop looking for players
                 newSubServer = SubServer(player_list.pop(), player_list.pop())  # create a new subserver
                 # set up the subserver
@@ -45,7 +44,10 @@ while not stop_loop:
                 # removes the players from player_list, puts them in a subserver object and adds them
                 # to the running subservers list
                 print("A new Subserver has been created - ",
-                      newSubServer.player1.player_ip, newSubServer.player2.player_ip)
+                      newSubServer.player1.player_ip[0],
+                      newSubServer.player1.player_sign,
+                      newSubServer.player2.player_ip[0],
+                      newSubServer.player2.player_sign)
         else:
             # if the subserver sends data the players turn does not matter, it matters only when
             # the server has to send data to the subserver

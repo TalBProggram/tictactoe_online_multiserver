@@ -1,8 +1,8 @@
 
 class Player:
-    def __init__(self, player_ip, player_sign, player_socket):
+    def __init__(self, player_ip, player_socket):
         self.player_ip = player_ip
-        self.player_sign = player_sign
+        self.player_sign = None
         self.mySocket = player_socket
 
     def set_player_sign(self, given_player_sign):
