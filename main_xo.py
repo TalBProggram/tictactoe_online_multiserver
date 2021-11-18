@@ -1,7 +1,10 @@
 import socket
-import SubServer
+
+from setuptools.msvc import winreg
+
+from SubServer import SubServer
 import select
-import Player
+from Player import Player
 
 
 max_msg_length = 1000
@@ -48,6 +51,7 @@ while not stop_loop:
                       newSubServer.player1.player_sign,
                       newSubServer.player2.player_ip[0],
                       newSubServer.player2.player_sign)
+                print(newSubServer)
         else:
             # if the subserver sends data the players turn does not matter, it matters only when
             # the server has to send data to the subserver
@@ -74,14 +78,15 @@ while not stop_loop:
             if socket_subServer.Check_if_won_in():
                 # if someone has won the game
                 # send the lost and won massages
-                socket_subServer.turn.mySocket.send(win_massage.encode())
+                # first send the one which its his turn now that he lost
+                socket_subServer.turn.mySocket.send(loss_massage.encode())
 
                 if socket_subServer.turn == socket_subServer.player1:
-                    # send loss massage
-                    socket_subServer.player2.mySocket.send(loss_massage.encode())
+                    # send win massage
+                    socket_subServer.player2.mySocket.send(win_massage.encode())
 
                 else:
-                    socket_subServer.player1.mySocket.send(loss_massage.encode())
+                    socket_subServer.player1.mySocket.send(win_massage.encode())
 
                 # close the sockets
                 socket_subServer.player1.mySocket.close()
@@ -98,15 +103,19 @@ while not stop_loop:
                 socket_subServer.player2.mySocket.close()
                 # remove from subserver list
                 running_subserver_list.remove(socket_subServer)
-
+######################################################################333problem
+            # the problem is that the server sends infinite packets to the current players turn.
+            #FIXTHEPROBLEM!!
             if socket_subServer.turn.mySocket == currentSocket:
                 # if the socket ready for writing is the player which its his turn
 
                 if socket_subServer.turn == socket_subServer.player1:
+                    #print("sent packet to player1")
                     socket_subServer.player1.mySocket.send(socket_subServer.board.to_string().encode())  # send
                     # the board to the socket
 
                 if socket_subServer.turn == socket_subServer.player2:
+                    #print("sent packet to player2")
                     socket_subServer.player2.mySocket.send(socket_subServer.board.to_string().encode())  # send
                     # the board to the socket
 

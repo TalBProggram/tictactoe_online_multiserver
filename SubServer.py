@@ -1,5 +1,5 @@
-import Board
-import Player
+from Board import Board
+from Player import Player
 
 
 class SubServer:

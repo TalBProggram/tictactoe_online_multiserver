@@ -9,10 +9,10 @@ class Player:
         self.player_sign = given_player_sign
 
     def __str__(self):  # print
-        return self.player_ip + ', ' + self.player_sign
+        return self.player_ip[0] + ', ' + self.player_sign
 
     def to_string(self):
-        return self.player_ip + ', ' + self.player_sign
+        return self.player_ip[0] + ', ' + self.player_sign
 
 
 ########################################################
