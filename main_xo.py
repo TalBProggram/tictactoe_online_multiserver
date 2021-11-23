@@ -63,12 +63,16 @@ while not stop_loop:
                     # read from player1
                     data = socket_subServer.player1.mySocket.recv(max_msg_length).decode()  # receive the massage
                     socket_subServer.board.switch_slot(int(data), socket_subServer.player1.player_sign)
+                    # send the player the new board after he chose a slot
+                    socket_subServer.player1.mySocket.send(socket_subServer.board.to_string().encode())
                     # switch the turn
                     socket_subServer.turn = socket_subServer.player2
 
                 if socket_subServer.player2.mySocket == currentSocket:
                     # read from player2
                     data = socket_subServer.player2.mySocket.recv(max_msg_length).decode()  # receive the massage
+                    # send the player the new board after he chose a slot
+                    socket_subServer.player2.mySocket.send(socket_subServer.board.to_string().encode())
                     socket_subServer.board.switch_slot(int(data), socket_subServer.player2.player_sign)
                     # switch the turn
                     socket_subServer.turn = socket_subServer.player1

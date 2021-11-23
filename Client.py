@@ -36,6 +36,12 @@ while True:
                 numberToSwitch in data:  # check if input
             # is acceptable
             client_socket.send(numberToSwitch.encode())
+            temp_board = client_socket.recv(max_massage_length).decode()
+            if current_os == 'Windows':
+                system('cls')  # clear screen
+            else:
+                system("clear")
+            print(temp_board)
             right_input = True
         else:
             print("You have to enter ONE number between 1-9 which is not already taken!")
