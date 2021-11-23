@@ -6,7 +6,6 @@ from SubServer import SubServer
 import select
 from Player import Player
 
-
 max_msg_length = 1000
 server_ip = '0.0.0.0'
 server_port = 5555
@@ -18,7 +17,9 @@ server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((server_ip, server_port))
 server_socket.listen()
 
-client_sockets = []
+
+client_sockets_read = []
+client_sockets_write = []
 client_ips = []
 player_list = []
 running_subserver_list = []  # the currently running subservers
@@ -26,19 +27,20 @@ stop_loop = False
 
 # a loop that divides the players joining into subservers
 while not stop_loop:
-    readList, writeList, errorList = select.select([server_socket] + client_sockets, client_sockets, [])
+    readList, writeList, errorList = select.select([server_socket] + client_sockets_read, client_sockets_write, [])
     # first loop that adds new players
 
     for currentSocket in readList:
 
         if currentSocket is server_socket:
             connection, client_address = currentSocket.accept()
-            client_sockets.append(connection)
+            client_sockets_read.append(connection)
+            client_sockets_write.append(connection)
             client_ips.append(client_address)
             # add a player
             player_list.append(Player(client_address, connection))
             print("A player joined - ", client_address)
-            if len(client_sockets) == 2:  # if two players joined, stop looking for players
+            if len(player_list) == 2:  # if two players joined, stop looking for players
                 newSubServer = SubServer(player_list.pop(), player_list.pop())  # create a new subserver
                 # set up the subserver
                 newSubServer.board.create_new_board()  # create the board
@@ -103,21 +105,30 @@ while not stop_loop:
                 socket_subServer.player2.mySocket.close()
                 # remove from subserver list
                 running_subserver_list.remove(socket_subServer)
-######################################################################333problem
+            ######################################################################333problem
             # the problem is that the server sends infinite packets to the current players turn.
-            #FIXTHEPROBLEM!!
+            # FIXTHEPROBLEM!!
             if socket_subServer.turn.mySocket == currentSocket:
                 # if the socket ready for writing is the player which its his turn
 
                 if socket_subServer.turn == socket_subServer.player1:
-                    #print("sent packet to player1")
+                    # remove it so it doesnt send it infinitly
+                    client_sockets_write.remove(currentSocket)
+                    print("removing" + "{PLAYER1SOCKET}", client_sockets_write)
                     socket_subServer.player1.mySocket.send(socket_subServer.board.to_string().encode())  # send
                     # the board to the socket
+                    # now return the other player's socket to the list that select uses
+                    # if its not already there
+                    if not (socket_subServer.player2.mySocket in client_sockets_write):
+                        client_sockets_write.append(socket_subServer.player2.mySocket)
 
                 if socket_subServer.turn == socket_subServer.player2:
-                    #print("sent packet to player2")
+                    # remove it so it doesnt send it infinitly
+                    client_sockets_write.remove(currentSocket)
+                    print("removing" + "{PLAYER2SOCKET}", client_sockets_write)
                     socket_subServer.player2.mySocket.send(socket_subServer.board.to_string().encode())  # send
                     # the board to the socket
-
-
-
+                    # now return the other player's socket to the list that select uses
+                    # if its not already there
+                    if not (socket_subServer.player1.mySocket in client_sockets_write):
+                        client_sockets_write.append(socket_subServer.player1.mySocket)
