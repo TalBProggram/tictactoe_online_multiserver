@@ -1,7 +1,5 @@
 import socket
 
-from setuptools.msvc import winreg
-
 from SubServer import SubServer
 import select
 from Player import Player
