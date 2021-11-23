@@ -17,6 +17,7 @@ server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((server_ip, server_port))
 server_socket.listen()
 
+
 client_sockets_read = []
 client_sockets_write = []
 client_ips = []
@@ -39,7 +40,7 @@ while not stop_loop:
             # add a player
             player_list.append(Player(client_address, connection))
             print("A player joined - ", client_address)
-            if len(client_sockets_read) == 2:  # if two players joined, stop looking for players
+            if len(player_list) == 2:  # if two players joined, stop looking for players
                 newSubServer = SubServer(player_list.pop(), player_list.pop())  # create a new subserver
                 # set up the subserver
                 newSubServer.board.create_new_board()  # create the board
@@ -111,8 +112,6 @@ while not stop_loop:
                 # if the socket ready for writing is the player which its his turn
 
                 if socket_subServer.turn == socket_subServer.player1:
-                    print("sent packet to player1")
-                    print("Length: ", len(writeList))
                     # remove it so it doesnt send it infinitly
                     client_sockets_write.remove(currentSocket)
                     print("removing" + "{PLAYER1SOCKET}", client_sockets_write)
@@ -124,8 +123,6 @@ while not stop_loop:
                         client_sockets_write.append(socket_subServer.player2.mySocket)
 
                 if socket_subServer.turn == socket_subServer.player2:
-                    print("sent packet to player2")
-                    print("Length: ", len(writeList))
                     # remove it so it doesnt send it infinitly
                     client_sockets_write.remove(currentSocket)
                     print("removing" + "{PLAYER2SOCKET}", client_sockets_write)
