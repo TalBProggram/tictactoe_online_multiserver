@@ -19,10 +19,14 @@ server_socket.listen()
 
 
 client_sockets_read = []
+# has the clients that it has to read from - holds sockets
 client_sockets_write = []
-client_ips = []
+# has the clients that it has to write to - holds sockets
 player_list = []
-running_subserver_list = []  # the currently running subservers
+# a list that holds new clients/players - holds Players
+running_subserver_list = []
+# the currently running subservers - holds subservers
+
 stop_loop = False
 
 # a loop that divides the players joining into subservers
@@ -36,7 +40,6 @@ while not stop_loop:
             connection, client_address = currentSocket.accept()
             client_sockets_read.append(connection)
             client_sockets_write.append(connection)
-            client_ips.append(client_address)
             # add a player
             player_list.append(Player(client_address, connection))
             print("A player joined - ", client_address)
@@ -99,6 +102,15 @@ while not stop_loop:
                 socket_subServer.player2.mySocket.close()
                 # remove from subserver list
                 running_subserver_list.remove(socket_subServer)
+                # remove from the lists that select uses
+                client_sockets_read.remove(socket_subServer.player1.mySocket)
+                client_sockets_read.remove(socket_subServer.player2.mySocket)
+
+                if socket_subServer.player1.mySocket in client_sockets_write:
+                    client_sockets_write.remove(socket_subServer.player1.mySocket)
+
+                if socket_subServer.player2.mySocket in client_sockets_write:
+                    client_sockets_write.remove(socket_subServer.player2.mySocket)
 
             if socket_subServer.Check_if_tie_in():
                 # send the players the tie massages
@@ -109,15 +121,14 @@ while not stop_loop:
                 socket_subServer.player2.mySocket.close()
                 # remove from subserver list
                 running_subserver_list.remove(socket_subServer)
-            ######################################################################333problem
-            # the problem is that the server sends infinite packets to the current players turn.
-            # FIXTHEPROBLEM!!
+
             if socket_subServer.turn.mySocket == currentSocket:
                 # if the socket ready for writing is the player which its his turn
 
                 if socket_subServer.turn == socket_subServer.player1:
                     # remove it so it doesnt send it infinitly
-                    client_sockets_write.remove(currentSocket)
+                    if currentSocket in client_sockets_write:
+                        client_sockets_write.remove(currentSocket)
                     print("removing" + "{PLAYER1SOCKET}", client_sockets_write)
                     socket_subServer.player1.mySocket.send(socket_subServer.board.to_string().encode())  # send
                     # the board to the socket
@@ -128,7 +139,8 @@ while not stop_loop:
 
                 if socket_subServer.turn == socket_subServer.player2:
                     # remove it so it doesnt send it infinitly
-                    client_sockets_write.remove(currentSocket)
+                    if currentSocket in client_sockets_write:
+                        client_sockets_write.remove(currentSocket)
                     print("removing" + "{PLAYER2SOCKET}", client_sockets_write)
                     socket_subServer.player2.mySocket.send(socket_subServer.board.to_string().encode())  # send
                     # the board to the socket
