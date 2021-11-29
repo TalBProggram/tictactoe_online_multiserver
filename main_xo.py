@@ -1,7 +1,4 @@
 import socket
-
-from setuptools.msvc import winreg
-
 from SubServer import SubServer
 import select
 from Player import Player
@@ -56,7 +53,6 @@ while not stop_loop:
                       newSubServer.player1.player_sign,
                       newSubServer.player2.player_ip[0],
                       newSubServer.player2.player_sign)
-                print(newSubServer)
         else:
             # if there are players playing right now
             for socket_subServer in running_subserver_list:
@@ -83,7 +79,6 @@ while not stop_loop:
         # loop on writeable sockets
         for socket_subServer in running_subserver_list:
 
-            #if socket_subServer.Check_if_won_in():
             if socket_subServer.check_if_over():
                 # if someone has won the game
                 # send the lost and won massages
@@ -113,7 +108,6 @@ while not stop_loop:
                     client_sockets_write.remove(socket_subServer.player2.mySocket)
                 continue
                 # return to the beginning of the loop
-            #if socket_subServer.Check_if_tie_in():
             if socket_subServer.check_if_tie():
                 # send the players the tie massages
                 socket_subServer.player1.mySocket.send(tie_massage.encode())
@@ -138,10 +132,9 @@ while not stop_loop:
                 # if the socket ready for writing is the player which its his turn
 
                 if socket_subServer.turn == socket_subServer.player1:
-                    # remove it so it doesnt send it infinitly
+                    # remove it so it doesnt send it infinitely
                     if currentSocket in client_sockets_write:
                         client_sockets_write.remove(currentSocket)
-                    print("removing" + "{PLAYER1SOCKET}", client_sockets_write)
                     socket_subServer.player1.mySocket.send(socket_subServer.board.to_string().encode())  # send
                     # the board to the socket
                     # now return the other player's socket to the list that select uses
@@ -153,7 +146,6 @@ while not stop_loop:
                     # remove it so it doesnt send it infinitly
                     if currentSocket in client_sockets_write:
                         client_sockets_write.remove(currentSocket)
-                    print("removing" + "{PLAYER2SOCKET}", client_sockets_write)
                     socket_subServer.player2.mySocket.send(socket_subServer.board.to_string().encode())  # send
                     # the board to the socket
                     # now return the other player's socket to the list that select uses
