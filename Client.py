@@ -19,15 +19,13 @@ while True:
         system('cls')  # clear screen
     else:
         system("clear")
-    if "won" in data or "lost" in data:
+    if "won" in data or "lost" in data or "tie" in data:
         print(data)
         break
-    print(data)
-    if "tie" in data:
-        break
-
+    else:
+        print(data)
     # loop until you get an acceptable input
-    right_input = False
+    right_input = False  # loop stopper
     while not right_input:
         numberToSwitch = input("Which slot do you choose: ")
         if len(numberToSwitch) == 1 and \

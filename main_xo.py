@@ -58,8 +58,7 @@ while not stop_loop:
                       newSubServer.player2.player_sign)
                 print(newSubServer)
         else:
-            # if the subserver sends data the players turn does not matter, it matters only when
-            # the server has to send data to the subserver
+            # if there are players playing right now
             for socket_subServer in running_subserver_list:
 
                 if socket_subServer.player1.mySocket == currentSocket:
@@ -84,7 +83,8 @@ while not stop_loop:
         # loop on writeable sockets
         for socket_subServer in running_subserver_list:
 
-            if socket_subServer.Check_if_won_in():
+            #if socket_subServer.Check_if_won_in():
+            if socket_subServer.check_if_over():
                 # if someone has won the game
                 # send the lost and won massages
                 # first send the one which its his turn now that he lost
@@ -111,8 +111,10 @@ while not stop_loop:
 
                 if socket_subServer.player2.mySocket in client_sockets_write:
                     client_sockets_write.remove(socket_subServer.player2.mySocket)
-
-            if socket_subServer.Check_if_tie_in():
+                continue
+                # return to the beginning of the loop
+            #if socket_subServer.Check_if_tie_in():
+            if socket_subServer.check_if_tie():
                 # send the players the tie massages
                 socket_subServer.player1.mySocket.send(tie_massage.encode())
                 socket_subServer.player2.mySocket.send(tie_massage.encode())
@@ -121,7 +123,17 @@ while not stop_loop:
                 socket_subServer.player2.mySocket.close()
                 # remove from subserver list
                 running_subserver_list.remove(socket_subServer)
+                # remove from the lists that select uses
+                client_sockets_read.remove(socket_subServer.player1.mySocket)
+                client_sockets_read.remove(socket_subServer.player2.mySocket)
 
+                if socket_subServer.player1.mySocket in client_sockets_write:
+                    client_sockets_write.remove(socket_subServer.player1.mySocket)
+
+                if socket_subServer.player2.mySocket in client_sockets_write:
+                    client_sockets_write.remove(socket_subServer.player2.mySocket)
+                continue
+                # return to the beginning of the loop
             if socket_subServer.turn.mySocket == currentSocket:
                 # if the socket ready for writing is the player which its his turn
 
