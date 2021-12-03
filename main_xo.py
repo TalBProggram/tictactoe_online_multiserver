@@ -70,13 +70,14 @@ while not stop_loop:
                     if socket_subServer.player2.mySocket == currentSocket:
                         # read from player2
                         data = socket_subServer.player2.mySocket.recv(max_msg_length).decode()  # receive the massage
+                        socket_subServer.board.switch_slot(int(data), socket_subServer.player2.player_sign)
                         # send the player the new board after he chose a slot
                         socket_subServer.player2.mySocket.send(socket_subServer.board.to_string().encode())
-                        socket_subServer.board.switch_slot(int(data), socket_subServer.player2.player_sign)
                         # switch the turn
                         socket_subServer.turn = socket_subServer.player1
-            except ValueError:
-                print("One of the clients has disconnected")
+
+            # except ValueError or BrokenPipeError
+            except:
                 # if one of the players has disconnected, remove both players from the lists /
                 # they are in and send a massage to the player that's still playing
                 # send massage:
@@ -87,7 +88,6 @@ while not stop_loop:
                     except BrokenPipeError:
                         socket_subServer.player1.mySocket.send("The other player has disconnected,"
                                                                " would you like to join another game?".encode())
-                        print("Sent the massage")
 
                 else:
                     socket_subServer.player1.mySocket.send("The other player has disconnected,"
@@ -107,7 +107,6 @@ while not stop_loop:
                 if socket_subServer.player2.mySocket in client_sockets_write:
                     client_sockets_write.remove(socket_subServer.player2.mySocket)
                 continue
-
 
     for currentSocket in writeList:
         # loop on writeable sockets

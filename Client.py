@@ -66,8 +66,6 @@ while True:
                 system("clear")
             print(temp_board)
             right_input = True
-        elif right_input =="":
-            print("Input is empty")
         else:
             print("You have to enter ONE number between 1-9 which is not already taken!")
 
