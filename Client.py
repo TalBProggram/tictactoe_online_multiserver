@@ -14,6 +14,12 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # create tcp 
 client_socket.connect((server_ip, server_port))  # connect to main server
 
 current_os = platform.system()
+# clear screen and write to the client that its waiting for players
+if current_os == 'Windows':
+    system('cls')  # clear screen
+else:
+    system("clear")
+print("Waiting for another player...")
 while True:
     data = client_socket.recv(max_massage_length).decode()
     if current_os == 'Windows':
@@ -27,9 +33,9 @@ while True:
         if data == "":
             print("The other player has disconnected,\nwould you like to join another game?")
         print(data)
-        answer = input("Y/N \n>>>")
         # loop until he answers
         while True:
+            answer = input("Y/N\n>>>")
             if answer == "y" or answer == "Y" or answer == "yes" or answer == "Yes":
                 client_socket.close()  # close the socket
                 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # create tcp socket
