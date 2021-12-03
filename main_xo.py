@@ -55,25 +55,59 @@ while not stop_loop:
                       newSubServer.player2.player_sign)
         else:
             # if there are players playing right now
-            for socket_subServer in running_subserver_list:
+            try:
+                for socket_subServer in running_subserver_list:
 
-                if socket_subServer.player1.mySocket == currentSocket:
-                    # read from player1
-                    data = socket_subServer.player1.mySocket.recv(max_msg_length).decode()  # receive the massage
-                    socket_subServer.board.switch_slot(int(data), socket_subServer.player1.player_sign)
-                    # send the player the new board after he chose a slot
-                    socket_subServer.player1.mySocket.send(socket_subServer.board.to_string().encode())
-                    # switch the turn
-                    socket_subServer.turn = socket_subServer.player2
+                    if socket_subServer.player1.mySocket == currentSocket:
+                        # read from player1
+                        data = socket_subServer.player1.mySocket.recv(max_msg_length).decode()  # receive the massage
+                        socket_subServer.board.switch_slot(int(data), socket_subServer.player1.player_sign)
+                        # send the player the new board after he chose a slot
+                        socket_subServer.player1.mySocket.send(socket_subServer.board.to_string().encode())
+                        # switch the turn
+                        socket_subServer.turn = socket_subServer.player2
 
-                if socket_subServer.player2.mySocket == currentSocket:
-                    # read from player2
-                    data = socket_subServer.player2.mySocket.recv(max_msg_length).decode()  # receive the massage
-                    # send the player the new board after he chose a slot
-                    socket_subServer.player2.mySocket.send(socket_subServer.board.to_string().encode())
-                    socket_subServer.board.switch_slot(int(data), socket_subServer.player2.player_sign)
-                    # switch the turn
-                    socket_subServer.turn = socket_subServer.player1
+                    if socket_subServer.player2.mySocket == currentSocket:
+                        # read from player2
+                        data = socket_subServer.player2.mySocket.recv(max_msg_length).decode()  # receive the massage
+                        # send the player the new board after he chose a slot
+                        socket_subServer.player2.mySocket.send(socket_subServer.board.to_string().encode())
+                        socket_subServer.board.switch_slot(int(data), socket_subServer.player2.player_sign)
+                        # switch the turn
+                        socket_subServer.turn = socket_subServer.player1
+            except ValueError:
+                print("One of the clients has disconnected")
+                # if one of the players has disconnected, remove both players from the lists /
+                # they are in and send a massage to the player that's still playing
+                # send massage:
+                if socket_subServer.turn == socket_subServer.player1:
+                    try:
+                        socket_subServer.player2.mySocket.send("The other player has disconnected,"
+                                                               " would you like to join another game?".encode())
+                    except BrokenPipeError:
+                        socket_subServer.player1.mySocket.send("The other player has disconnected,"
+                                                               " would you like to join another game?".encode())
+                        print("Sent the massage")
+
+                else:
+                    socket_subServer.player1.mySocket.send("The other player has disconnected,"
+                                                           " would you like to join another game?".encode())
+                # close the sockets
+                socket_subServer.player1.mySocket.close()
+                socket_subServer.player2.mySocket.close()
+                # remove from subserver list
+                running_subserver_list.remove(socket_subServer)
+                # remove from the lists that select uses
+                client_sockets_read.remove(socket_subServer.player1.mySocket)
+                client_sockets_read.remove(socket_subServer.player2.mySocket)
+
+                if socket_subServer.player1.mySocket in client_sockets_write:
+                    client_sockets_write.remove(socket_subServer.player1.mySocket)
+
+                if socket_subServer.player2.mySocket in client_sockets_write:
+                    client_sockets_write.remove(socket_subServer.player2.mySocket)
+                continue
+
 
     for currentSocket in writeList:
         # loop on writeable sockets

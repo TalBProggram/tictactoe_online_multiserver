@@ -2,6 +2,7 @@
 
 import socket
 import select
+import sys
 from os import system
 import platform
 
@@ -22,6 +23,24 @@ while True:
     if "won" in data or "lost" in data or "tie" in data:
         print(data)
         break
+    elif "disconnected" in data or data == "":
+        if data == "":
+            print("The other player has disconnected,\nwould you like to join another game?")
+        print(data)
+        answer = input("Y/N \n>>>")
+        # loop until he answers
+        while True:
+            if answer == "y" or answer == "Y" or answer == "yes" or answer == "Yes":
+                client_socket.close()  # close the socket
+                client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # create tcp socket
+                client_socket.connect((server_ip, server_port))  # rejoin to main server
+                break
+                # return to the beginning of the loop
+            elif answer == "n" or answer == "N" or answer == "no" or answer == "No":
+                sys.exit()  # close the window
+            else:
+                print("Please enter a valid answer(Y/N)...")
+        continue
     else:
         print(data)
     # loop until you get an acceptable input
@@ -41,6 +60,8 @@ while True:
                 system("clear")
             print(temp_board)
             right_input = True
+        elif right_input =="":
+            print("Input is empty")
         else:
             print("You have to enter ONE number between 1-9 which is not already taken!")
 
