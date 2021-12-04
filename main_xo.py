@@ -77,7 +77,7 @@ while not stop_loop:
                         socket_subServer.turn = socket_subServer.player1
 
             # except ValueError or BrokenPipeError
-            except:
+            except(ValueError, BrokenPipeError, ConnectionError):
                 # if one of the players has disconnected, remove both players from the lists /
                 # they are in and send a massage to the player that's still playing
                 # send massage:
@@ -85,7 +85,7 @@ while not stop_loop:
                     try:
                         socket_subServer.player2.mySocket.send("The other player has disconnected,"
                                                                " would you like to join another game?".encode())
-                    except BrokenPipeError:
+                    except (BrokenPipeError, ConnectionError):
                         socket_subServer.player1.mySocket.send("The other player has disconnected,"
                                                                " would you like to join another game?".encode())
 

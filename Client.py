@@ -28,18 +28,33 @@ while True:
         system("clear")
     if "won" in data or "lost" in data or "tie" in data:
         print(data)
-        break
-    elif "disconnected" in data or data == "":
-        if data == "":
-            print("The other player has disconnected,\nwould you like to join another game?")
-        print(data)
-        # loop until he answers
+        # play again part
+        print("Would you like to play again?")
         while True:
             answer = input("Y/N\n>>>")
             if answer == "y" or answer == "Y" or answer == "yes" or answer == "Yes":
                 client_socket.close()  # close the socket
                 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # create tcp socket
                 client_socket.connect((server_ip, server_port))  # rejoin to main server
+                print("Yay! waiting for another player...")
+                break
+            elif answer == "n" or answer == "N" or answer == "no" or answer == "No":
+                sys.exit()  # close the window
+            else:
+                print("Please enter a valid answer(Y/N)...")
+        continue  # go to the start of the loop
+    elif "disconnected" in data or data == "":
+        if data == "":
+            print("The other player has disconnected,\nwould you like to join another game?")
+        print(data)
+        # loop until the user answers
+        while True:
+            answer = input("Y/N\n>>>")
+            if answer == "y" or answer == "Y" or answer == "yes" or answer == "Yes":
+                client_socket.close()  # close the socket
+                client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # create tcp socket
+                client_socket.connect((server_ip, server_port))  # rejoin to main server
+                print("Yay! waiting for another player...")
                 break
                 # return to the beginning of the loop
             elif answer == "n" or answer == "N" or answer == "no" or answer == "No":
@@ -54,8 +69,7 @@ while True:
     while not right_input:
         numberToSwitch = input("Which slot do you choose: ")
         if len(numberToSwitch) == 1 and \
-                type(numberToSwitch) == str and \
-                10 > int(numberToSwitch) > 0 and \
+                numberToSwitch in "123456789" and \
                 numberToSwitch in data:  # check if input
             # is acceptable
             client_socket.send(numberToSwitch.encode())
