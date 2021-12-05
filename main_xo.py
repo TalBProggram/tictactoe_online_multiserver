@@ -1,3 +1,6 @@
+
+# main for running the TicTacToe server
+
 import socket
 from SubServer import SubServer
 import select

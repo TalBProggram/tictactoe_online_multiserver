@@ -1,7 +1,6 @@
-# client for XO game
+# client for TicTacToe game
 
 import socket
-import select
 import sys
 from os import system
 import platform
